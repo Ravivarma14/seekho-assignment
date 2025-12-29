@@ -14,6 +14,7 @@ data class AnimeDetailEntity(
     val rating: Double?,
     val episodes: Int?,
     val synopsis: String?,
+    val trailerThumbnailUrl: String?,
     val trailerYoutubeId: String?,
 
     val genres: String,

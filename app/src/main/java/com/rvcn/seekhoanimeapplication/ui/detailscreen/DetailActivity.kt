@@ -31,6 +31,7 @@ class DetailActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_ANIME_ID = "extra_anime_id"
+        const val TAG = "DetailActivity"
     }
 
     private lateinit var binding: ActivityDetailBinding
@@ -46,7 +47,7 @@ class DetailActivity : AppCompatActivity() {
         setupCast()
 
         val animeId = intent.getIntExtra(EXTRA_ANIME_ID, -1)
-        Log.d("TAG", "recieved: id: $animeId")
+        Log.d(TAG, "recieved: id: $animeId")
         if (animeId == -1) {
             finish()
             return
@@ -72,39 +73,36 @@ class DetailActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             viewModel.uiState.collect { state ->
                 when (state) {
-                    DetailUiState.Loading -> showLoading()
-                    is DetailUiState.Success -> showData(state)
-                    is DetailUiState.Error -> showError(state.message)
+                    DetailUiState.Loading -> {
+                        binding.progressBarDetail.visibility = View.VISIBLE
+                    }
+
+                    is DetailUiState.Success -> {
+                        binding.progressBarDetail.visibility = View.GONE
+                        bindDetail(state.detail, state.isOffline)
+                    }
+
+                    is DetailUiState.Error -> {
+                        binding.progressBarDetail.visibility = View.GONE
+                        Snackbar.make(
+                            binding.root,
+                            state.message,
+                            Snackbar.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
     }
 
-    private fun showLoading() {
-        binding.progressBarDetail.visibility = View.VISIBLE
-    }
-
-    private fun showError(msg: String) {
-        binding.progressBarDetail.visibility = View.GONE
-        Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).show()
-    }
-
-    private fun showData(state: DetailUiState.Success) {
-        binding.progressBarDetail.visibility = View.GONE
-        bindDetail(state.detail, state.isOffline)
-    }
-
     private fun bindDetail(detail: AnimeDetail, isOffline: Boolean) {
 
-        // Trailer
         if (detail.trailerYoutubeId != null && !isOffline) {
             binding.cardTrailer.visibility = View.VISIBLE
-            binding.cvPoster.visibility = View.GONE
+            binding.ivPoster.visibility = View.GONE
 
-            // Extract YouTube video ID from URL
             detail.trailerYoutubeId?.let { url ->
                 val videoId = Uri.parse(url).getQueryParameter("v")
-//                val videoId = url
                 videoId?.let {
                     binding.youtubePlayer.addYouTubePlayerListener(object :
                         AbstractYouTubePlayerListener() {
@@ -115,7 +113,6 @@ class DetailActivity : AppCompatActivity() {
                 }
 
             }
-
 
         } else {
             binding.cardTrailer.visibility = View.GONE
@@ -137,13 +134,10 @@ class DetailActivity : AppCompatActivity() {
             }
         }
 
-        // Title & meta
         binding.tvTitle.text = detail.title
-
         binding.tvMeta.text =
             "⭐ ${detail.rating ?: "--"} • ${detail.episodes ?: "--"} eps"
 
-        // Synopsis
         if (detail.synopsis.isNullOrBlank()) {
             binding.tvSynopsis.visibility = View.GONE
         } else {
@@ -160,12 +154,21 @@ class DetailActivity : AppCompatActivity() {
             binding.genreContainer.addView(chip)
         }
 
-        // Cast (THIS FIXES YOUR CRASH EFFECT)
+        // Cast
         if (detail.cast.isEmpty()) {
             binding.rvCast.visibility = View.GONE
         } else {
             binding.rvCast.visibility = View.VISIBLE
             castAdapter.submitList(detail.cast)
+        }
+
+        // Offline indicator
+        if (isOffline) {
+            Snackbar.make(
+                binding.root,
+                "Showing offline data",
+                Snackbar.LENGTH_LONG
+            ).show()
         }
     }
 

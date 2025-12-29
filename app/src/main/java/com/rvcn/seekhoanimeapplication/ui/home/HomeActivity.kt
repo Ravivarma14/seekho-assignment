@@ -2,6 +2,7 @@ package com.rvcn.seekhoanimeapplication.ui.home
 
 import android.content.Intent
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import androidx.activity.enableEdgeToEdge
@@ -23,9 +24,13 @@ class HomeActivity : AppCompatActivity() {
     val viewmodel: HomeViewmodel by viewModels()
     private lateinit var binding: ActivityHomeBinding
 
+    companion object{
+        private const val TAG ="HomeActivity"
+    }
+
     private val carouselAdapter = CarouselAdapter{animeId ->
 
-        Log.d("TAG", "clicked: id: $animeId")
+        Log.d(TAG, "clicked: id: $animeId")
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra(DetailActivity.EXTRA_ANIME_ID, animeId)
         startActivity(intent)
@@ -33,7 +38,7 @@ class HomeActivity : AppCompatActivity() {
 
     private val animeGridAdapter = AnimeGridAdapter{animeId ->
 
-        Log.d("TAG", "clicked: id: $animeId")
+        Log.d(TAG, "clicked: id: $animeId")
         val intent = Intent(this, DetailActivity::class.java)
         intent.putExtra(DetailActivity.EXTRA_ANIME_ID, animeId)
         startActivity(intent)
@@ -76,7 +81,14 @@ class HomeActivity : AppCompatActivity() {
             viewmodel.uiState.collect { state ->
                 when(state){
                     HomeUIState.Loading -> showLoading()
-                    HomeUIState.Offline -> showOffline()
+                    HomeUIState.Offline -> {
+                        showOffline()
+                    }
+                    HomeUIState.OfflineEmpty -> showOfflineEmpty()
+                    HomeUIState.BackOnline -> {
+                        hideOfflineEmpty()
+                        showBackOnline()
+                    }
                     is HomeUIState.Error -> showError()
                     is HomeUIState.Success -> showData(state)
                 }
@@ -98,6 +110,31 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
+    fun showBackOnlineSnackbar(){
+
+        offlineSnackbar = Snackbar.make(binding.root, "Welcome Back Online",
+            Snackbar.LENGTH_INDEFINITE) .setAction("Dismiss"){offlineSnackbar?.dismiss()}
+
+        offlineSnackbar?.show()
+
+    }
+
+    private fun showOfflineEmpty() {
+        binding.progressBar.visibility = View.GONE
+        binding.rvCarousel.visibility = View.GONE
+        binding.rvAnimeGrid.visibility = View.GONE
+        binding.offlineEmptyView.visibility = View.VISIBLE
+
+        binding.btnOpenSettings.setOnClickListener {
+            startActivity(Intent(Settings.ACTION_WIRELESS_SETTINGS))
+        }
+    }
+
+    private fun hideOfflineEmpty() {
+        binding.offlineEmptyView.visibility = View.GONE
+    }
+
+
     fun showOffline(){
         binding.progressBar.visibility = View.GONE
         binding.errorView.visibility = View.GONE
@@ -106,7 +143,20 @@ class HomeActivity : AppCompatActivity() {
         binding.rvCarousel.visibility = View.VISIBLE
         binding.rvAnimeGrid.visibility = View.VISIBLE
 
-        showOfflineSnackbar()
+        if (animeGridAdapter.itemCount>0) {
+            showOfflineSnackbar()
+        }
+    }
+
+    fun showBackOnline(){
+        binding.progressBar.visibility = View.GONE
+        binding.errorView.visibility = View.GONE
+        binding.btnRetry.visibility = View.GONE
+
+        binding.rvCarousel.visibility = View.VISIBLE
+        binding.rvAnimeGrid.visibility = View.VISIBLE
+
+        showBackOnlineSnackbar()
     }
 
     fun showLoading(){
@@ -122,6 +172,7 @@ class HomeActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.GONE
         binding.errorView.visibility = View.GONE
         binding.btnRetry.visibility = View.GONE
+        binding.offlineEmptyView.visibility = View.GONE
 
         binding.rvCarousel.visibility = View.VISIBLE
         binding.rvAnimeGrid.visibility = View.VISIBLE
@@ -129,7 +180,7 @@ class HomeActivity : AppCompatActivity() {
         offlineSnackbar?.dismiss()
 
         carouselAdapter.submitList(state.carousel)
-        Log.d("TAG", "showData: grid data: ${state.grid}")
+        Log.d(TAG, "showData: grid data: ${state.grid}")
         animeGridAdapter.submitList(state.grid)
     }
 
