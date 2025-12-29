@@ -197,7 +197,7 @@ API / Room DB
 
 ## App Demo Video
 
-[Click here to watch the app demo video](screenshots/app_demo.mp4)
+[Click here to watch the app demo video](screenshots/demo_video.mp4)
 
 
 ##  Edge Cases Handled
