@@ -168,9 +168,36 @@ API / Room DB
 
 ## Screenshots
 
-Add screenshots for better evaluation:
+### Splash Screen
+<img src="screenshots/splashscreen.jpeg" width="180"/>
 
-``` images ```
+### Home Screen
+<p align="left">
+<img src="screenshots/home_1.jpeg" width="180"/>
+<img src="screenshots/home_2.jpeg" width="180"/>
+</p>
+
+### Anime Detail Screen
+<p align="left">
+<img src="screenshots/online_detail_1.jpeg" width="180"/>
+<img src="screenshots/online_detail_2.jpeg" width="180"/>
+</p>
+
+### Offline – Cached Data Available
+<p align="left">
+<img src="screenshots/offline_data.jpeg" width="180"/>
+<img src="screenshots/offline_detail.jpeg" width="180"/>
+</p>
+
+### Offline – No Cached Data
+<img src="screenshots/offline_nodata.jpeg" width="180"/>
+
+### Back Online
+<img src="screenshots/back_online.jpeg" width="180"/>
+
+## App Demo Video
+
+[Click here to watch the app demo video](screenshots/app_demo.mp4)
 
 
 ##  Edge Cases Handled
