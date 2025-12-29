@@ -42,7 +42,6 @@ class CarouselAdapter(private val onItemClick: (Int) -> Unit): ListAdapter<Anime
 
     }
 
-
     class ViewHolder(private val binding: ItemCarouselBinding): RecyclerView.ViewHolder(binding.root){
 
         fun bind(anime: Anime, onItemClick: (Int) -> Unit){

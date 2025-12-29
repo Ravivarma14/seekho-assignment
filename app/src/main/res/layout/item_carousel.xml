@@ -20,7 +20,6 @@
         android:layout_gravity="bottom"
         android:background="@drawable/bg_bottom_gradient"/>
 
-    <!-- Title -->
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
@@ -37,7 +36,6 @@
         android:maxLines="1"
         android:ellipsize="end"/>
 
-    <!-- Rating + Episodes -->
     <TextView
         android:id="@+id/tvMeta"
         android:layout_width="match_parent"

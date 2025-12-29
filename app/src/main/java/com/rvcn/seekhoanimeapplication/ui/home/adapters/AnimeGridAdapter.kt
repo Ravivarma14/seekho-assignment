@@ -1,6 +1,5 @@
 package com.rvcn.seekhoanimeapplication.ui.home.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -25,8 +24,6 @@ class AnimeGridAdapter(private val onItemClick: (Int) -> Unit): ListAdapter<Anim
         holder: ViewHolder,
         position: Int
     ) {
-
-        Log.d("TAG", "onBindViewHolder: $position")
         holder.bind(getItem(position), onItemClick)
     }
 
